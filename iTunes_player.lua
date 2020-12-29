@@ -258,8 +258,10 @@ lcd.clear();
 	local long=playlist[playingSong][3]--do not change this value it is the length of the current song playing
 	local flight=model.getTimer(1).value--flight duration timer: 0=timer1, 1=timer2
 	local upTime=model.getTimer(2).value--do not change this value it is how long the current song has played
-	local datenow = getDateTime()		
-	local timeText = (string.format("%02d:%02d",datenow.hour,datenow.min))
+	local datenow = getDateTime()
+	local datenowHour = datenow.hour%12     -- changed to 12-hour clock
+	if datenowHour == 0 or datenowHour == 12 then datenowHour = 12 end
+	local timeText = (string.format("%02d:%02d",datenowHour,datenow.min))
  	local batt = getValue("tx-voltage")
 	
 -- Calculate indexes for screen display
@@ -278,9 +280,13 @@ lcd.clear();
 		lcd.drawTimer(LCD_W/2+9, 1, flight,SMLSIZE)
 		
 	--current time
-		lcd.drawText(1,15, timeText,PREC1)	
-	end
+		if datenowHour > 9 then
+			lcd.drawText(10,15, timeText,PREC1)
+		else 
+			lcd.drawText(5,15, timeText,PREC1)
+		end
 		
+	end
 --[[ Change the layout of this portion to your desired screen look
 	 Comment out any items that you do not want--]]
 	
