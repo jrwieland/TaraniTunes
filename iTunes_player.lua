@@ -261,14 +261,19 @@ lcd.clear();
 	local long=playlist[playingSong][3]--do not change this value it is the length of the current song playing
 	local flight=model.getTimer(1).value--flight duration timer: 0=timer1, 1=timer2
 	local upTime=model.getTimer(2).value--do not change this value it is how long the current song has played
-	local datenow = getDateTime()		
-	local timeText = (string.format("%02d:%02d",datenow.hour,datenow.min))
+	local datenow = getDateTime()
+	local datenowHour = datenow.hour%12     -- changed to 12-hour clock
+	if datenowHour == 0 or datenowHour == 12 then datenowHour = 12 end
+	if datenow.hour >= 12 then amPM = "PM"
+	else amPM = "AM" end
+	local timeText = (string.format("%2d:%02d",datenowHour,datenow.min))
+	timeText = timeText .. amPM
  	local batt = getValue("tx-voltage")
 	
 -- Calculate indexes for screen display
 	if LCD_W == 212 then -- Taranis X9D Radio Larger text layout for 9X radios
 	--Flight Time
-		lcd.drawText(LCD_W/4+5, 1, "Flight =",MIDSIZE)
+    	lcd.drawText(LCD_W/4+5, 1, "Flight =",MIDSIZE)
 		lcd.drawTimer(LCD_W/4+69, 1, flight,MIDSIZE)
 		
 	--current time
@@ -281,7 +286,11 @@ lcd.clear();
 		lcd.drawTimer(LCD_W/2+9, 1, flight,SMLSIZE)
 		
 	--current time
-		lcd.drawText(1,15, timeText,PREC1)	
+		if datenowHour > 9 then
+			lcd.drawText(18,15, timeText,PREC1)
+		else 
+			lcd.drawText(13,15, timeText,PREC1)
+		end
 	end
 		
 --[[ Change the layout of this portion to your desired screen look
